@@ -9,6 +9,7 @@
 #import "ViewController.h"
 
 #import <SwaggerClient/SWGObjectApi.h>
+#import <SwaggerClient/SWGProductApi.h>
 
 NSString *imageName;
 BOOL imageNameToggle;
@@ -44,7 +45,7 @@ BOOL imageNameToggle;
     aLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:20.0];
     aLabel.adjustsFontSizeToFitWidth = YES;
     aLabel.textColor = [UIColor whiteColor];
-    aLabel.text = @"(POST) /objects";
+    aLabel.text = @"(POST) /objects/file";
     [aButton addSubview:aLabel];
     
     curY += aButton.frame.size.height + 25;
@@ -53,7 +54,7 @@ BOOL imageNameToggle;
     aButton.frame = CGRectMake(10, curY, screenBounds.size.width-20, 50);
     aButton.backgroundColor = [UIColor blackColor];
     aButton.layer.cornerRadius = 8.0;
-    [aButton addTarget:self action:@selector(getObjectsByProductId) forControlEvents:UIControlEventTouchUpInside];
+    [aButton addTarget:self action:@selector(getObjectsWithProductId) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:aButton];
     self.objectsWithProductIdButton = aButton;
     
@@ -65,16 +66,36 @@ BOOL imageNameToggle;
     aLabel.text = @"(GET) /objects/products/{productId}";
     [aButton addSubview:aLabel];
     
+    curY += aButton.frame.size.height + 25;
+    
+    aButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    aButton.frame = CGRectMake(10, curY, screenBounds.size.width-20, 50);
+    aButton.backgroundColor = [UIColor blackColor];
+    aButton.layer.cornerRadius = 8.0;
+    [aButton addTarget:self action:@selector(getProductsWithProductId) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:aButton];
+    self.productsWithProductIdButton = aButton;
+    
+    aLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, aButton.frame.size.width, aButton.frame.size.height)];
+    aLabel.textAlignment = NSTextAlignmentCenter;
+    aLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:20.0];
+    aLabel.adjustsFontSizeToFitWidth = YES;
+    aLabel.textColor = [UIColor whiteColor];
+    aLabel.text = @"(GET) /products/{productId}";
+    [aButton addSubview:aLabel];
+    
     UIImageView *anImageView = [[UIImageView alloc] initWithFrame:CGRectMake(screenBounds.size.width/2 - 50, screenBounds.size.height - 150, 100, 100)];
     anImageView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:anImageView];
     self.previewImage = anImageView;
+    self.previewImage.hidden = YES;
 }
 
 #pragma mark - APIs
 -(void)postObjectsWithImageFile {
     self.objectsWithImageButton.userInteractionEnabled = NO;
     self.objectsWithImageButton.backgroundColor = [UIColor lightGrayColor];
+    self.previewImage.hidden = NO;
     
     imageNameToggle = !imageNameToggle;
     imageName = imageNameToggle ? @"sample01.jpg" : @"sample02.jpg";
@@ -109,10 +130,10 @@ BOOL imageNameToggle;
                              }];
 }
 
--(void)getObjectsByProductId {
+-(void)getObjectsWithProductId {
     self.objectsWithProductIdButton.userInteractionEnabled = NO;
     self.objectsWithProductIdButton.backgroundColor = [UIColor lightGrayColor];
-    self.previewImage.image = nil;
+    self.previewImage.hidden = YES;
     
     // PRODUCT ID param
     NSString *aProductId = @"5a13a92a247c1a00017051c2";
@@ -132,6 +153,33 @@ BOOL imageNameToggle;
                                           NSLog(@"Error: %@", error);
                                       }
                                   }];
+}
+
+-(void)getProductsWithProductId {
+    self.productsWithProductIdButton.userInteractionEnabled = NO;
+    self.productsWithProductIdButton.backgroundColor = [UIColor lightGrayColor];
+    self.previewImage.hidden = YES;
+    
+    // PRODUCT ID param
+    NSString *aProductId = @"5a13a92a247c1a00017051c2";
+    NSLog(@"(GET) /products/{productId} \n PRODUCT ID : %@ \n Please wait ...", aProductId);
+    
+    SWGProductApi *apiInstance = [[SWGProductApi alloc] init];
+    [apiInstance getProductsWithProductId:aProductId
+                                   offset:[NSNumber numberWithInt:0]
+                                    limit:[NSNumber numberWithInt:5]
+                        completionHandler: ^(SWGGetProductsResponse* output, NSError* error) {
+                            self.productsWithProductIdButton.userInteractionEnabled = YES;
+                            self.productsWithProductIdButton.backgroundColor = [UIColor blackColor];
+                            
+                            if (output) {
+                                NSLog(@"%@", output);
+                                NSLog(@"");
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
 }
 
 #pragma mark - Instance methods

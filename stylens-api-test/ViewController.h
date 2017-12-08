@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) UIButton *objectsWithImageButton;
 @property (nonatomic, strong) UIButton *objectsWithProductIdButton;
+@property (nonatomic, strong) UIButton *productsWithProductIdButton;
 
 @property (nonatomic, strong) UIImageView *previewImage;
 
